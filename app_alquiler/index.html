@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Servicios Básicos - David Cahuasiri</title>
+    <meta name="theme-color" content="#2563eb">
+    <style>
+        :root {
+            /* Modo Claro */
+            --bg-primary: #e2e8f0;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border-color: #cbd5e1;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-green: #16a34a;
+            --accent-green-bg: #dcfce7;
+            --accent-light-blue: #0284c7;
+            --accent-light-blue-bg: #e0f2fe;
+            --accent-red: #ef4444;
+            --accent-red-hover: #dc2626;
+            --badge-counter: #d97706; 
+            --input-bg: #ffffff;
+            --box-inner-bg: #f1f5f9;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            --card-radius: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --accent-blue: #3b82f6;
+            --accent-blue-hover: #60a5fa;
+            --accent-green: #22c55e;
+            --accent-green-bg: #064e3b;
+            --accent-light-blue: #38bdf8;
+            --accent-light-blue-bg: #0c4a6e;
+            --accent-red: #f87171;
+            --accent-red-hover: #ef4444;
+            --badge-counter: #fbbf24; 
+            --input-bg: #0f172a;
+            --box-inner-bg: #0f172a;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .title-area h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .title-area p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            padding: 18px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        [data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
+            filter: invert(48%) sepia(85%) saturate(1450%) hue-rotate(300deg) brightness(100%) contrast(100%);
+            cursor: pointer;
+        }
+
+        input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .rates-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .rate-box {
+            background-color: var(--box-inner-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 8px;
+            border-radius: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .rate-box span.rate-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            width: 100%;
+            white-space: nowrap;
+        }
+
+        .highlight-count {
+            color: var(--badge-counter);
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .rate-box strong {
+            font-size: 1.05rem;
+            color: var(--accent-blue);
+        }
+
+        .rooms-header {
+            display: grid;
+            grid-template-columns: 1.2fr 80px 100px;
+            gap: 8px;
+            padding: 8px 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .room-row {
+            display: grid;
+            grid-template-columns: 1.2fr 80px 100px;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            background-color: var(--box-inner-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .room-input-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 6px 8px;
+            background: transparent;
+            border: 1px dashed transparent;
+        }
+
+        .room-input-name:hover, .room-input-name:focus {
+            border-color: var(--accent-blue);
+            background: var(--input-bg);
+        }
+
+        .pxc-input {
+            text-align: center;
+            padding: 6px;
+        }
+
+        .room-total {
+            text-align: right;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--accent-green);
+        }
+
+        .verification-card {
+            background: var(--accent-light-blue-bg);
+            border: 2px solid var(--accent-light-blue);
+            border-radius: var(--card-radius);
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .verification-card p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .verification-amount {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent-light-blue);
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background-color: var(--accent-green-bg);
+            color: var(--accent-green);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        .btn-success {
+            background-color: var(--accent-green);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--box-inner-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-danger {
+            background-color: var(--accent-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--accent-red-hover);
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+            border-radius: 6px;
+            transition: transform 0.1s ease;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.15);
+        }
+
+        .history-list {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .history-card-item {
+            background-color: var(--box-inner-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .history-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.82rem;
+        }
+
+        .history-details.show {
+            display: block;
+        }
+
+        .history-room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .history-room-chip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px;
+            font-size: 0.78rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transform: scale(0.9);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.show .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .modal-text {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 420px) {
+            .rooms-header, .room-row {
+                grid-template-columns: 1.2fr 70px 85px;
+            }
+            .rate-box span.rate-label {
+                font-size: 0.72rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="title-area">
+            <h1>David Cahuasiri</h1>
+            <p>Calculadora de Luz y Agua por Cuarto</p>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Oscuro</span>
+        </button>
+    </header>
+
+    <div class="verification-card">
+        <p>TOTAL AGUA Y LUZ</p>
+        <div class="verification-amount" id="totalSuperior">Bs 0.00</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span>Servicios Básicos</span>
+            <input type="month" id="mesAño" style="width: auto; padding: 4px 8px; font-size: 0.82rem;" onchange="calcularTodo()">
+        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="costoLuz">Factura Luz (Bs)</label>
+                <input type="number" step="0.01" id="costoLuz" value="0.00" oninput="calcularTodo()">
+            </div>
+            <div class="form-group">
+                <label for="costoAgua">Factura Agua (Bs)</label>
+                <input type="number" step="0.01" id="costoAgua" value="0.00" oninput="calcularTodo()">
+            </div>
+        </div>
+
+        <div class="rates-summary">
+            <div class="rate-box">
+                <span class="rate-label">
+                    Luz x Cuarto (<span class="highlight-count" id="numCuartosActivos">0</span>)
+                </span>
+                <strong id="luzPorCuarto">Bs 0.00</strong>
+            </div>
+            <div class="rate-box">
+                <span class="rate-label">
+                    Agua x Persona (<span class="highlight-count" id="numTotalPxC">0</span>)
+                </span>
+                <strong id="aguaPorPersona">Bs 0.00</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span>Distribución por Cuarto</span>
+            <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">PxC = Personas</span>
+        </div>
+
+        <div class="rooms-header">
+            <span>Nombre / Cuarto</span>
+            <span style="text-align: center;">PxC</span>
+            <span style="text-align: right;">Total (Bs)</span>
+        </div>
+
+        <div id="roomsContainer"></div>
+    </div>
+
+    <div class="verification-card">
+        <p>TOTAL GENERAL CALCULADO</p>
+        <div class="verification-amount" id="totalCalculado">Bs 0.00</div>
+        <div class="status-badge" id="statusBadge">✓ Coincide exactamente con la factura</div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn btn-primary" onclick="guardarHistorial()">💾 Guardar Mes</button>
+        <button class="btn btn-success" onclick="compartirWhatsApp()">📱 Enviar a WhatsApp</button>
+    </div>
+
+    <div class="control-buttons">
+        <button class="btn btn-secondary" onclick="limpiarPantalla()">🧹 Limpiar Campos (0)</button>
+        <button class="btn btn-secondary" onclick="restaurarPorDefecto()">🔄 Datos Por Defecto</button>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span>Historial Guardado</span>
+        </div>
+        <div class="history-list" id="historialContainer">
+            <p style="font-size: 0.82rem; color: var(--text-secondary);">No hay registros guardados aún.</p>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN TOAST -->
+    <div class="toast" id="toastNotification">
+        <span style="color: var(--accent-green); font-size: 1.1rem;">✓</span>
+        <span id="toastText">Acción completada con éxito</span>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <div class="modal-icon">🗑️</div>
+            <div class="modal-title">¿Eliminar registro?</div>
+            <div class="modal-text" id="modalDescription">Esta acción no se puede deshacer.</div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn btn-danger" id="btnConfirmDelete">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultRooms = [
+            { id: 1, nombre: "Cuarto Ruth", pxc: 2, activo: true },
+            { id: 2, nombre: "Cuarto 2", pxc: 1, activo: true },
+            { id: 3, nombre: "Cuarto 3", pxc: 2, activo: true },
+            { id: 4, nombre: "Cuarto 4", pxc: 1, activo: true },
+            { id: 5, nombre: "Cuarto 5", pxc: 1, activo: true },
+            { id: 6, nombre: "Cuarto 6", pxc: 2, activo: true },
+            { id: 7, nombre: "Cuarto 7", pxc: 1, activo: true },
+            { id: 8, nombre: "Cuarto David y Loida", pxc: 0, activo: true }
+        ];
+
+        let cuartos = JSON.parse(localStorage.getItem('cuartosData')) || JSON.parse(JSON.stringify(defaultRooms));
+        let indiceEliminarTemp = null;
+
+        const fechaActual = new Date();
+        const mesFormateado = fechaActual.toISOString().slice(0, 7);
+        document.getElementById('mesAño').value = mesFormateado;
+
+        function renderCuartos() {
+            const container = document.getElementById('roomsContainer');
+            container.innerHTML = '';
+
+            cuartos.forEach((c, index) => {
+                const row = document.createElement('div');
+                row.className = 'room-row';
+                row.innerHTML = `
+                    <div>
+                        <input type="text" class="room-input-name" value="${c.nombre || 'Cuarto ' + c.id}" 
+                               onchange="actualizarNombre(${index}, this.value)">
+                    </div>
+                    <div>
+                        <input type="number" class="pxc-input" min="0" max="10" value="${c.pxc}" 
+                               onchange="actualizarPxC(${index}, this.value)">
+                    </div>
+                    <div class="room-total" id="totalCuarto_${c.id}">
+                        Bs 0.00
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function actualizarNombre(index, nuevoNombre) {
+            cuartos[index].nombre = nuevoNombre.trim() || `Cuarto ${cuartos[index].id}`;
+            localStorage.setItem('cuartosData', JSON.stringify(cuartos));
+        }
+
+        function actualizarPxC(index, valor) {
+            cuartos[index].pxc = parseInt(valor) || 0;
+            localStorage.setItem('cuartosData', JSON.stringify(cuartos));
+            calcularTodo();
+        }
+
+        function calcularTodo() {
+            const costoLuz = parseFloat(document.getElementById('costoLuz').value) || 0;
+            const costoAgua = parseFloat(document.getElementById('costoAgua').value) || 0;
+
+            const cuartosOcupados = cuartos.filter(c => c.pxc > 0).length || 0;
+            const totalPxC = cuartos.reduce((sum, c) => sum + c.pxc, 0);
+
+            const luzPorCuartoVal = cuartosOcupados > 0 ? (costoLuz / cuartosOcupados) : 0;
+            const aguaPorPersonaVal = totalPxC > 0 ? (costoAgua / totalPxC) : 0;
+
+            document.getElementById('numCuartosActivos').innerText = cuartosOcupados;
+            document.getElementById('numTotalPxC').innerText = totalPxC;
+            document.getElementById('luzPorCuarto').innerText = `Bs ${luzPorCuartoVal.toFixed(2)}`;
+            document.getElementById('aguaPorPersona').innerText = `Bs ${aguaPorPersonaVal.toFixed(2)}`;
+
+            let sumaTotalCalculada = 0;
+
+            cuartos.forEach(c => {
+                let totalCuarto = 0;
+                if (c.pxc > 0) {
+                    totalCuarto = luzPorCuartoVal + (c.pxc * aguaPorPersonaVal);
+                }
+                sumaTotalCalculada += totalCuarto;
+
+                const elem = document.getElementById(`totalCuarto_${c.id}`);
+                if (elem) {
+                    elem.innerText = `Bs ${totalCuarto.toFixed(2)}`;
+                }
+            });
+
+            const totalFacturas = costoLuz + costoAgua;
+            
+            document.getElementById('totalSuperior').innerText = `Bs ${totalFacturas.toFixed(2)}`;
+            document.getElementById('totalCalculado').innerText = `Bs ${sumaTotalCalculada.toFixed(2)}`;
+
+            const badge = document.getElementById('statusBadge');
+            if (Math.abs(sumaTotalCalculada - totalFacturas) < 0.05) {
+                badge.innerText = '✓ Coincide exactamente con la factura';
+                badge.style.backgroundColor = 'var(--accent-green-bg)';
+                badge.style.color = 'var(--accent-green)';
+            } else {
+                badge.innerText = '⚠ Ajuste de centavos detectado';
+                badge.style.backgroundColor = '#fef3c7';
+                badge.style.color = '#d97706';
+            }
+        }
+
+        function limpiarPantalla() {
+            document.getElementById('costoLuz').value = '0.00';
+            document.getElementById('costoAgua').value = '0.00';
+            cuartos.forEach(c => c.pxc = 0);
+            localStorage.setItem('cuartosData', JSON.stringify(cuartos));
+            renderCuartos();
+            calcularTodo();
+            mostrarToast("Formulario limpiado a cero");
+        }
+
+        function restaurarPorDefecto() {
+            cuartos = JSON.parse(JSON.stringify(defaultRooms));
+            localStorage.setItem('cuartosData', JSON.stringify(cuartos));
+            document.getElementById('costoLuz').value = '277.30';
+            document.getElementById('costoAgua').value = '215.57';
+            renderCuartos();
+            calcularTodo();
+            mostrarToast("Datos restaurados por defecto");
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            document.getElementById('themeIcon').innerText = newTheme === 'dark' ? '☀️' : '🌙';
+            document.getElementById('themeText').innerText = newTheme === 'dark' ? 'Claro' : 'Oscuro';
+            localStorage.setItem('theme', newTheme);
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'dark') {
+            document.getElementById('themeIcon').innerText = '☀️';
+            document.getElementById('themeText').innerText = 'Claro';
+        }
+
+        function compartirWhatsApp() {
+            const mesAño = document.getElementById('mesAño').value;
+            const costoLuz = parseFloat(document.getElementById('costoLuz').value) || 0;
+            const costoAgua = parseFloat(document.getElementById('costoAgua').value) || 0;
+            const totalFacturas = (costoLuz + costoAgua).toFixed(2);
+            const totalPxC = cuartos.reduce((sum, c) => sum + c.pxc, 0);
+
+            let mensaje = `📌 *RESUMEN DE SERVICIOS BÁSICOS (${mesAño})*\n\n`;
+            mensaje += `💡 Luz Total: Bs ${costoLuz.toFixed(2)}\n`;
+            mensaje += `💧 Agua Total: Bs ${costoAgua.toFixed(2)}\n`;
+            mensaje += `👥 Total Personas (PxC): ${totalPxC}\n`;
+            mensaje += `------------------------------------\n`;
+            mensaje += `*DETALLE POR CUARTO:*\n`;
+
+            const luzPorCuartoVal = costoLuz / (cuartos.filter(c => c.pxc > 0).length || 1);
+            const aguaPorPersonaVal = totalPxC > 0 ? (costoAgua / totalPxC) : 0;
+
+            cuartos.forEach(c => {
+                if (c.pxc > 0) {
+                    const totalCuarto = luzPorCuartoVal + (c.pxc * aguaPorPersonaVal);
+                    mensaje += `• ${c.nombre} (${c.pxc} personas): *Bs ${totalCuarto.toFixed(2)}*\n`;
+                }
+            });
+
+            mensaje += `------------------------------------\n`;
+            mensaje += `✅ *TOTAL COMPROBADO:* Bs ${totalFacturas}`;
+
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        function mostrarToast(mensaje) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastText').innerText = mensaje;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function guardarHistorial() {
+            const mesAño = document.getElementById('mesAño').value;
+            const costoLuz = parseFloat(document.getElementById('costoLuz').value) || 0;
+            const costoAgua = parseFloat(document.getElementById('costoAgua').value) || 0;
+            const total = (costoLuz + costoAgua).toFixed(2);
+
+            const cuartosOcupados = cuartos.filter(c => c.pxc > 0).length || 0;
+            const totalPxC = cuartos.reduce((sum, c) => sum + c.pxc, 0);
+            const luzPorCuartoVal = cuartosOcupados > 0 ? (costoLuz / cuartosOcupados) : 0;
+            const aguaPorPersonaVal = totalPxC > 0 ? (costoAgua / totalPxC) : 0;
+
+            const detalleCuartos = cuartos.map(c => {
+                let totalCuarto = 0;
+                if (c.pxc > 0) {
+                    totalCuarto = luzPorCuartoVal + (c.pxc * aguaPorPersonaVal);
+                }
+                return { id: c.id, nombre: c.nombre, pxc: c.pxc, total: totalCuarto.toFixed(2) };
+            });
+
+            let historial = JSON.parse(localStorage.getItem('historialServicios')) || [];
+            
+            historial = historial.filter(h => h.mesAño !== mesAño);
+            historial.unshift({ 
+                mesAño, 
+                costoLuz: costoLuz.toFixed(2), 
+                costoAgua: costoAgua.toFixed(2), 
+                total,
+                totalPxC,
+                detalleCuartos
+            });
+
+            localStorage.setItem('historialServicios', JSON.stringify(historial));
+            cargarHistorial();
+            mostrarToast(`Registro de ${mesAño} guardado correctamente`);
+        }
+
+        function cargarHistorial() {
+            let historial = JSON.parse(localStorage.getItem('historialServicios')) || [];
+            const container = document.getElementById('historialContainer');
+
+            if (historial.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.82rem; color: var(--text-secondary);">No hay registros guardados aún.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            historial.forEach((h, index) => {
+                const card = document.createElement('div');
+                card.className = 'history-card-item';
+
+                let cuartosHTML = '';
+                if (h.detalleCuartos && h.detalleCuartos.length > 0) {
+                    h.detalleCuartos.forEach(dc => {
+                        if (dc.pxc > 0) {
+                            cuartosHTML += `
+                                <div class="history-room-chip">
+                                    <span>${dc.nombre || 'Cuarto ' + dc.id} (${dc.pxc}p)</span>
+                                    <strong>Bs ${dc.total}</strong>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+
+                card.innerHTML = `
+                    <div class="history-header-row">
+                        <div>
+                            <strong>${h.mesAño}</strong><br>
+                            <span style="font-size: 0.78rem; color: var(--text-secondary);">
+                                Luz: Bs ${h.costoLuz} | Agua: Bs ${h.costoAgua}
+                            </span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <strong style="color: var(--accent-blue); margin-right: 4px;">Bs ${h.total}</strong>
+                            <button class="btn-icon" onclick="toggleDetalleHistorial(${index})" title="Ver detalles">👁️</button>
+                            <button class="btn-icon" onclick="solicitarEliminacion(${index})" title="Eliminar registro">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="history-details" id="historyDetails_${index}">
+                        <div style="color: var(--text-secondary); margin-bottom: 6px;">
+                            👥 Total personas registradas: <strong>${h.totalPxC || 0}</strong>
+                        </div>
+                        <div class="history-room-grid">
+                            ${cuartosHTML || '<span style="color: var(--text-secondary);">Sin desglose por cuarto.</span>'}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleDetalleHistorial(index) {
+            const detailsElem = document.getElementById(`historyDetails_${index}`);
+            if (detailsElem) {
+                detailsElem.classList.toggle('show');
+            }
+        }
+
+        function solicitarEliminacion(index) {
+            let historial = JSON.parse(localStorage.getItem('historialServicios')) || [];
+            indiceEliminarTemp = index;
+            document.getElementById('modalDescription').innerText = `¿Estás seguro de eliminar el registro del mes ${historial[index].mesAño}?`;
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        function cerrarModal() {
+            document.getElementById('confirmModal').classList.remove('show');
+            indiceEliminarTemp = null;
+        }
+
+        document.getElementById('btnConfirmDelete').addEventListener('click', () => {
+            if (indiceEliminarTemp !== null) {
+                let historial = JSON.parse(localStorage.getItem('historialServicios')) || [];
+                const mesEliminado = historial[indiceEliminarTemp].mesAño;
+                historial.splice(indiceEliminarTemp, 1);
+                localStorage.setItem('historialServicios', JSON.stringify(historial));
+                cargarHistorial();
+                cerrarModal();
+                mostrarToast(`Registro de ${mesEliminado} eliminado`);
+            }
+        });
+
+        renderCuartos();
+        calcularTodo();
+        cargarHistorial();
+    </script>
+</body>
+</html>
